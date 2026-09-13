@@ -1,2 +1,38 @@
 server:
   port:8080
+resilience4j:
+  circuitbreaker:
+    config:
+      default:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        #slidingWindowType: TIME_BASED
+        minimumNumberOfCalls: 20
+        waitDurationInOpenState: 50s
+        failureRateThreshold: 50
+        eventConsumerBufferSize: 10
+  ratelimiter:
+    instances:
+      backendA:
+        limitForPeriod: 2
+        limitRefreshPeriod: 10s
+        timeoutDuration: 0
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 100
+      backendB:
+        limitForPeriod: 6
+        limitRefreshPeriod: 500ms
+        timeoutDuration: 3s
+managerment:
+  health:
+    circurtbreakers:
+      enabled: true
+    endpoints:
+      web:
+        exposure:
+          included:
+            - "*"
+    endpoint:
+      health:
+        show-details: always
