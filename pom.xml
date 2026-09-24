@@ -20,7 +20,9 @@
         <maven.compiler.source>23</maven.compiler.source>
         <maven.compiler.target>23</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jjwt.version>0.12.6</jjwt.version>
     </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -31,13 +33,67 @@
                 <type>pom</type>
             </dependency>
         </dependencies>
-
     </dependencyManagement>
+
     <dependencies>
+        <!-- 1. Spring Boot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- 2. Spring Boot Security -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- 3. Spring Data JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- 4. PostgreSQL Driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- 5. Validation -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- 6. Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 7. JWT (io.jsonwebtoken 0.12.6 chuẩn cho Spring Boot 3) -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Các thư viện sẵn có của bạn -->
         <dependency>
             <groupId>io.github.resilience4j</groupId>
             <artifactId>resilience4j-spring-boot3</artifactId>
