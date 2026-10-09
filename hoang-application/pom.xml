@@ -28,5 +28,12 @@
             <artifactId>hoang-infrastructure</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Thêm Lombok để nhận diện @Builder, @Getter, @Setter -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

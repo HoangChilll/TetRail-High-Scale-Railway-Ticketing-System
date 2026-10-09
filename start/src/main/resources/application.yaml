@@ -1,5 +1,34 @@
 server:
-  port:8080
+  port: 8080
+
+spring:
+  application:
+    name: tetrail-ticketing-system
+
+  # 1. Cấu hình kết nối PostgreSQL
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tetrail
+    username: hoang
+    password: abcde
+    driver-class-name: org.postgresql.Driver
+
+  # 2. Cấu hình JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# 3. Cấu hình thông số JWT (Bảo mật HMAC-SHA256 với Secret Key 256-bit)
+jwt:
+  # Chuỗi Hex 64 ký tự = 256 bits (đáp ứng tiêu chuẩn JJWT 0.12.6)
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  # Thời hạn Access Token: 86400000 ms = 24 giờ
+  expiration: 86400000
+
+# 4. Resilience4j cấu hình sẵn có của bạn
 resilience4j:
   circuitbreaker:
     config:
@@ -7,7 +36,6 @@ resilience4j:
         registerHealthIndicator: true
         slidingWindowSize: 10
         permittedNumberOfCallsInHalfOpenState: 3
-        #slidingWindowType: TIME_BASED
         minimumNumberOfCalls: 20
         waitDurationInOpenState: 50s
         failureRateThreshold: 50
@@ -24,15 +52,16 @@ resilience4j:
         limitForPeriod: 6
         limitRefreshPeriod: 500ms
         timeoutDuration: 3s
-managerment:
+
+# 5. Spring Boot Actuator
+management:
   health:
-    circurtbreakers:
+    circuitbreakers:
       enabled: true
-    endpoints:
-      web:
-        exposure:
-          included:
-            - "*"
-    endpoint:
-      health:
-        show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
