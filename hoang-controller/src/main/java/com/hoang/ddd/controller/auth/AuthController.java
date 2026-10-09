@@ -6,9 +6,12 @@ import com.hoang.ddd.application.auth.dto.RegisterCommand;
 import com.hoang.ddd.application.auth.dto.RegisterUseCase;
 import com.hoang.ddd.application.auth.dto.TokenResponse;
 import com.hoang.ddd.application.auth.dto.UserResponse;
+import com.hoang.ddd.infrastructure.security.UserDetailsCustom;
+import com.hoang.ddd.infrastructure.security.annotation.CurrentUser;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +24,6 @@ public class AuthController {
     private final RegisterUseCase registerUseCase;
     private final LoginUseCase loginUseCase;
 
-    // Constructor Injection tường minh
     public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
@@ -36,6 +38,18 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginCommand command) {
         TokenResponse response = loginUseCase.login(command);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
+     * PARAMETER RESOLVER PATTERN: Trích xuất thông tin người dùng đang thực hiện
+     * request.
+     * Phòng chống hoàn toàn lỗ hổng IDOR.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@CurrentUser UserDetailsCustom currentUser) {
+        // currentUser chứa sẵn Domain Entity User (từ Adapter Pattern ở Bước 4)
+        UserResponse response = UserResponse.fromEntity(currentUser.getUser());
         return ResponseEntity.ok(response);
     }
 }
