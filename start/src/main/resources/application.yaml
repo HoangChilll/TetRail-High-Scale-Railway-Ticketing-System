@@ -27,6 +27,9 @@ jwt:
   secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
   # Thời hạn Access Token: 86400000 ms = 24 giờ
   expiration: 86400000
+    # Thời hạn Refresh Token: 604800000 ms = 7 ngày
+  refresh-expiration: 604800000
+
 
 # 4. Resilience4j cấu hình sẵn có của bạn
 resilience4j:
