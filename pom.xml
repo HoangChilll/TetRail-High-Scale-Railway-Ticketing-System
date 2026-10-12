@@ -92,7 +92,12 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
-
+        <!-- 8. Testing: JUnit 5, Mockito, AssertJ -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!-- Các thư viện sẵn có của bạn -->
         <dependency>
             <groupId>io.github.resilience4j</groupId>
