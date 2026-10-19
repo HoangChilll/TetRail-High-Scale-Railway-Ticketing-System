@@ -15,12 +15,18 @@ spring:
   # 2. Cấu hình JPA / Hibernate
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto:  validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-
+  flyway:
+    enabled: true
+    baseline-on-migrate: true       # Tự động tạo baseline nếu database đã có sẵn dữ liệu trước đó
+    baseline-version: 0             # Phiên bản baseline bắt đầu từ 0
+    locations: classpath:db/migration
+    validate-on-migrate: true       # Kiểm tra tính toàn vẹn của checksum
+    out-of-order: false   
 # 3. Cấu hình thông số JWT (Bảo mật HMAC-SHA256 với Secret Key 256-bit)
 jwt:
   # Chuỗi Hex 64 ký tự = 256 bits (đáp ứng tiêu chuẩn JJWT 0.12.6)

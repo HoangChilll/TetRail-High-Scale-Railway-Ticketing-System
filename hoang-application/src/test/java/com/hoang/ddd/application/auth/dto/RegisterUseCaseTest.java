@@ -1,5 +1,6 @@
 package com.hoang.ddd.application.auth.dto;
 
+import com.hoang.ddd.application.usecase.RegisterUseCase;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
 import com.hoang.ddd.domain.model.entity.UserStatus;
