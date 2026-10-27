@@ -51,6 +51,14 @@ public class User {
         return Objects.equals(username, user.username);
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(username);

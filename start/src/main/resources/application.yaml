@@ -26,7 +26,22 @@ spring:
     baseline-version: 0             # Phiên bản baseline bắt đầu từ 0
     locations: classpath:db/migration
     validate-on-migrate: true       # Kiểm tra tính toàn vẹn của checksum
-    out-of-order: false   
+    out-of-order: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:vutronghoang12072006@gmail.com}
+    password: ${MAIL_PASSWORD:your_16_character_app_password} # Mật khẩu ứng dụng (Google App Password)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  # 7. Cấu hình Telegram Bot
+  telegram:
+    bot:
+      token: ${TELEGRAM_BOT_TOKEN:123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ}
 # 3. Cấu hình thông số JWT (Bảo mật HMAC-SHA256 với Secret Key 256-bit)
 jwt:
   # Chuỗi Hex 64 ký tự = 256 bits (đáp ứng tiêu chuẩn JJWT 0.12.6)
@@ -74,3 +89,4 @@ management:
   endpoint:
     health:
       show-details: always
+

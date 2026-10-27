@@ -2,9 +2,12 @@ package com.hoang.ddd.application.usecase;
 
 import com.hoang.ddd.application.auth.dto.RegisterCommand;
 import com.hoang.ddd.application.auth.dto.UserResponse;
+import com.hoang.ddd.application.service.notification.notification.NotificationService;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
 import com.hoang.ddd.domain.model.entity.UserStatus;
+import com.hoang.ddd.domain.notification.NotificationChannel;
+import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.repository.RoleRepository;
 import com.hoang.ddd.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +20,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class RegisterUseCase {
-
+    private final NotificationService notificationService;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
@@ -50,11 +53,19 @@ public class RegisterUseCase {
                 .status(UserStatus.ACTIVE)
                 .roles(Set.of(defaultRole))
                 .build();
+        // Gửi email chào mừng người dùng mới
 
         // 5. Lưu vào Database
         User savedUser = userRepository.save(user);
 
-        // 6. Chuyển đổi và trả về DTO phản hồi
+        // 6. Gửi email chào mừng người dùng mới
+        NotificationMessage welcomeEmail = NotificationMessage.builder()
+                .recipient(savedUser.getEmail())
+                .subject("Chào mừng bạn gia nhập hệ thống bán vé tàu TetRail!")
+                .content("Xin chào " + savedUser.getUsername() + ", tài khoản của bạn đã được khởi tạo thành công.")
+                .build();
+        notificationService.send(NotificationChannel.EMAIL, welcomeEmail);
+        // 7. Chuyển đổi và trả về DTO phản hồi
         return UserResponse.fromEntity(savedUser);
     }
 }
