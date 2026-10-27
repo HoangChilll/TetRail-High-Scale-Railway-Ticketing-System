@@ -2,7 +2,7 @@ package com.hoang.ddd.application.usecase;
 
 import com.hoang.ddd.application.auth.dto.RegisterCommand;
 import com.hoang.ddd.application.auth.dto.UserResponse;
-import com.hoang.ddd.application.service.notification.notification.NotificationService;
+import com.hoang.ddd.application.service.notification.NotificationService;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
 import com.hoang.ddd.domain.model.entity.UserStatus;

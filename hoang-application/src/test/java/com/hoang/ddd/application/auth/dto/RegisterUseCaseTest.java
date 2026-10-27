@@ -1,9 +1,12 @@
 package com.hoang.ddd.application.auth.dto;
 
+import com.hoang.ddd.application.service.notification.NotificationService;
 import com.hoang.ddd.application.usecase.RegisterUseCase;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
 import com.hoang.ddd.domain.model.entity.UserStatus;
+import com.hoang.ddd.domain.notification.NotificationChannel;
+import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.repository.RoleRepository;
 import com.hoang.ddd.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +24,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,7 +36,8 @@ class RegisterUseCaseTest {
 
     @Mock
     private RoleRepository roleRepository;
-
+    @Mock
+    private NotificationService notificationService;
     @Mock
     private PasswordEncoder passwordEncoder;
 
@@ -85,6 +90,9 @@ class RegisterUseCaseTest {
         // VERIFY: Đảm bảo các method bắt buộc được gọi đúng 1 lần
         verify(passwordEncoder, times(1)).encode("rawPassword123");
         verify(userRepository, times(1)).save(any(User.class));
+        verify(notificationService, times(1)).send(
+                eq(NotificationChannel.EMAIL),
+                any(NotificationMessage.class));
     }
 
     @Test
