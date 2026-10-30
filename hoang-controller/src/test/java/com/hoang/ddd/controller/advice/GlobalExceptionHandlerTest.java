@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = GlobalExceptionHandlerTest.TestExceptionController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import(GlobalExceptionHandler.class)
+@Import({GlobalExceptionHandler.class, GlobalExceptionHandlerTest.TestExceptionController.class})
 class GlobalExceptionHandlerTest {
 
     @Autowired
@@ -39,6 +40,11 @@ class GlobalExceptionHandlerTest {
         @GetMapping("/test/auth-exception")
         public void throwAuthException() {
             throw new BadCredentialsException("Invalid username or password");
+        }
+
+        @GetMapping("/test/access-denied")
+        public void throwAccessDenied() {
+            throw new AccessDeniedException("Access is denied");
         }
 
         @GetMapping("/test/runtime-exception")
@@ -80,6 +86,16 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
+    @DisplayName("Bắt AccessDeniedException -> Trả về 403 Forbidden")
+    void handleAccessDeniedException() throws Exception {
+        mockMvc.perform(get("/test/access-denied"))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.status").value(403))
+                .andExpect(jsonPath("$.error").value("Forbidden"))
+                .andExpect(jsonPath("$.message").value("Access is denied"));
+    }
+
+    @Test
     @DisplayName("Bắt Exception chưa phân loại -> Trả về 500 Internal Server Error")
     void handleGenericException() throws Exception {
         mockMvc.perform(get("/test/runtime-exception"))
@@ -89,4 +105,3 @@ class GlobalExceptionHandlerTest {
                 .andExpect(jsonPath("$.message").value("RuntimeException: Unexpected runtime error occurred"));
     }
 }
-

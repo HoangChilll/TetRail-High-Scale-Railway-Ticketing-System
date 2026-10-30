@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -30,7 +31,7 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.BAD_REQUEST.value())
                                 .error("Validation Error")
                                 .message("Invalid request payload")
-                                .path(request.getServletPath())
+                                .path(getPath(request))
                                 .timestamp(LocalDateTime.now().toString())
                                 .errors(errors)
                                 .build();
@@ -46,7 +47,7 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.BAD_REQUEST.value())
                                 .error("Bad Request")
                                 .message(ex.getMessage())
-                                .path(request.getServletPath())
+                                .path(getPath(request))
                                 .timestamp(LocalDateTime.now().toString())
                                 .build();
 
@@ -61,7 +62,7 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.CONFLICT.value())
                                 .error("Conflict")
                                 .message("Data conflict: Username or email is already registered in the system")
-                                .path(request.getServletPath())
+                                .path(getPath(request))
                                 .timestamp(LocalDateTime.now().toString())
                                 .build();
 
@@ -69,7 +70,6 @@ public class GlobalExceptionHandler {
         }
 
         // 4. Bắt TẤT CẢ các lỗi Xác thực của Spring Security
-
         @ExceptionHandler(AuthenticationException.class)
         public ResponseEntity<ErrorResponse> handleAuthenticationException(
                         AuthenticationException ex, HttpServletRequest request) {
@@ -77,14 +77,29 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.UNAUTHORIZED.value())
                                 .error("Unauthorized")
                                 .message("Invalid username or password")
-                                .path(request.getServletPath())
+                                .path(getPath(request))
                                 .timestamp(LocalDateTime.now().toString())
                                 .build();
 
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
 
-        // 5. Lưới an toàn cuối cùng: Bắt các lỗi không xác định
+        // 5. Bắt lỗi Phân quyền (AccessDeniedException / 403 Forbidden)
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+                        AccessDeniedException ex, HttpServletRequest request) {
+                ErrorResponse response = ErrorResponse.builder()
+                                .status(HttpStatus.FORBIDDEN.value())
+                                .error("Forbidden")
+                                .message(ex.getMessage() != null ? ex.getMessage() : "Access Denied")
+                                .path(getPath(request))
+                                .timestamp(LocalDateTime.now().toString())
+                                .build();
+
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+
+        // 6. Lưới an toàn cuối cùng: Bắt các lỗi không xác định
         @ExceptionHandler(Exception.class)
         public ResponseEntity<ErrorResponse> handleGlobalException(
                         Exception ex, HttpServletRequest request) {
@@ -95,10 +110,18 @@ public class GlobalExceptionHandler {
                                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                                 .error("Internal Server Error")
                                 .message(ex.getClass().getSimpleName() + ": " + ex.getMessage())
-                                .path(request.getServletPath())
+                                .path(getPath(request))
                                 .timestamp(LocalDateTime.now().toString())
                                 .build();
 
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+        private String getPath(HttpServletRequest request) {
+                String uri = request.getRequestURI();
+                if (uri != null && !uri.isEmpty()) {
+                        return uri;
+                }
+                return request.getServletPath();
         }
 }
