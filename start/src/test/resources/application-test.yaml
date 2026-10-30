@@ -44,3 +44,8 @@ resilience4j:
         limitRefreshPeriod: 10s
         timeoutDuration: 0
 
+management:
+  health:
+    mail:
+      enabled: false
+
