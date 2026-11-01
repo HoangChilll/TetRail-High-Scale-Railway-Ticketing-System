@@ -8,16 +8,14 @@ import java.time.Instant;
 import java.util.Objects;
 
 @Entity
-@Table(
-        name = "tickets",
-        indexes = {
-                @Index(name = "idx_tickets_booking_id", columnList = "booking_id"),
-                @Index(name = "idx_tickets_trip_id", columnList = "trip_id"),
-                @Index(name = "idx_tickets_seat_id", columnList = "seat_id"),
-                @Index(name = "idx_tickets_trip_seat", columnList = "trip_id, seat_id"),
-                @Index(name = "idx_tickets_trip_status", columnList = "trip_id, status")
-        }
-)
+@Table(name = "tickets", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_tickets_trip_seat", columnNames = { "trip_id", "seat_id" })
+}, indexes = {
+        @Index(name = "idx_tickets_booking_id", columnList = "booking_id"),
+        @Index(name = "idx_tickets_trip_id", columnList = "trip_id"),
+        @Index(name = "idx_tickets_seat_id", columnList = "seat_id"),
+        @Index(name = "idx_tickets_trip_status", columnList = "trip_id, status")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,8 +30,9 @@ public class Ticket {
     @Column(name = "ticket_code", nullable = false, unique = true, length = 50)
     private String ticketCode;
 
+    // Cho phép NULL khi vé ở trạng thái AVAILABLE
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id", nullable = false)
+    @JoinColumn(name = "booking_id")
     private Booking booking;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,7 +43,8 @@ public class Ticket {
     @JoinColumn(name = "seat_id", nullable = false)
     private Seat seat;
 
-    @Column(name = "passenger_name", nullable = false, length = 150)
+    // Cho phép NULL khi vé chưa bán
+    @Column(name = "passenger_name", length = 150)
     private String passengerName;
 
     @Column(name = "passenger_id", length = 50)
@@ -67,7 +67,7 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     @Builder.Default
-    private TicketStatus status = TicketStatus.RESERVED;
+    private TicketStatus status = TicketStatus.AVAILABLE;
 
     @Column(name = "issued_at")
     private Instant issuedAt;
@@ -85,12 +85,10 @@ public class Ticket {
 
     @PrePersist
     protected void onCreate() {
-        if (createdAt == null) {
+        if (createdAt == null)
             createdAt = Instant.now();
-        }
-        if (updatedAt == null) {
+        if (updatedAt == null)
             updatedAt = Instant.now();
-        }
     }
 
     @PreUpdate
@@ -100,8 +98,10 @@ public class Ticket {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Ticket ticket = (Ticket) o;
         return Objects.equals(ticketCode, ticket.ticketCode);
     }
