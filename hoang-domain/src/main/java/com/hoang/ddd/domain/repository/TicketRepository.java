@@ -2,6 +2,8 @@ package com.hoang.ddd.domain.repository;
 
 import com.hoang.ddd.domain.model.entity.Ticket;
 import com.hoang.ddd.domain.model.entity.TicketStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +19,12 @@ public interface TicketRepository {
     List<Ticket> findByBookingId(Long bookingId);
 
     List<Ticket> findByTripId(Long tripId);
+
+    Page<Ticket> findAll(Pageable pageable);
+
+    Page<Ticket> findByTripId(Long tripId, Pageable pageable);
+
+    Page<Ticket> findByStatus(TicketStatus status, Pageable pageable);
 
     Optional<Ticket> findByTripIdAndSeatId(Long tripId, Long seatId);
 

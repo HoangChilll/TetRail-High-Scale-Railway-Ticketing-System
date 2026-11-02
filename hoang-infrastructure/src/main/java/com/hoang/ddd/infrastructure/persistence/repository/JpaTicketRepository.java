@@ -3,6 +3,8 @@ package com.hoang.ddd.infrastructure.persistence.repository;
 import com.hoang.ddd.domain.model.entity.Ticket;
 import com.hoang.ddd.domain.model.entity.TicketStatus;
 import com.hoang.ddd.domain.repository.TicketRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,6 +28,12 @@ public interface JpaTicketRepository extends JpaRepository<Ticket, Long>, Ticket
 
     @Override
     List<Ticket> findByTripId(Long tripId);
+
+    @Override
+    Page<Ticket> findByTripId(Long tripId, Pageable pageable);
+
+    @Override
+    Page<Ticket> findByStatus(TicketStatus status, Pageable pageable);
 
     @Override
     Optional<Ticket> findByTripIdAndSeatId(Long tripId, Long seatId);
