@@ -10,6 +10,8 @@ import com.hoang.ddd.domain.repository.BookingRepository;
 import com.hoang.ddd.domain.repository.TicketRepository;
 import com.hoang.ddd.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,7 @@ public class BookTicketUseCase {
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
 
+    @CacheEvict(value = "trip_tickets", allEntries = true)
     @Transactional
     public BookingResponse execute(CreateBookingCommand command, Long userId) {
         List<Long> ticketIds = command.getTicketIds();
@@ -64,10 +67,9 @@ public class BookTicketUseCase {
 
         // 3. ATOMIC UPDATE: Thực hiện lệnh UPDATE giữ chỗ trong database
         int updatedCount = ticketRepository.reserveTickets(
-                ticketIds, 
-                savedBooking.getId(), 
-                command.getBuyerName()
-        );
+                ticketIds,
+                savedBooking.getId(),
+                command.getBuyerName());
 
         // 4. Nếu số vé update được < số vé yêu cầu -> Đã có người hớt tay trên
         if (updatedCount < ticketIds.size()) {
@@ -78,4 +80,3 @@ public class BookTicketUseCase {
         return BookingResponse.of(savedBooking);
     }
 }
-

@@ -5,7 +5,7 @@ import com.hoang.ddd.domain.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.cache.annotation.Cacheable;
 import java.util.List;
 
 @Service
@@ -14,6 +14,7 @@ public class GetTripTicketsUseCase {
 
     private final TicketRepository ticketRepository;
 
+    @Cacheable(value = "trip_tickets", key = "#tripId", unless = "#result == null || #result.isEmpty()")
     @Transactional(readOnly = true)
     public List<TicketResponse> execute(Long tripId) {
         return ticketRepository.findByTripId(tripId)
@@ -22,4 +23,3 @@ public class GetTripTicketsUseCase {
                 .toList();
     }
 }
-

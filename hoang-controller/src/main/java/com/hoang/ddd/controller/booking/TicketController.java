@@ -22,16 +22,6 @@ public class TicketController {
     private final GetTicketByIdUseCase getTicketByIdUseCase;
     private final GetTicketByCodeUseCase getTicketByCodeUseCase;
 
-    /**
-     * Xem danh sách vé có phân trang (pagination)
-     * Hỗ trợ sắp xếp (sort) và lọc theo tripId hoặc status (nếu có).
-     *
-     * Ví dụ:
-     * - GET /api/tickets?page=0&size=10
-     * - GET /api/tickets?page=0&size=10&sort=fare,desc
-     * - GET /api/tickets?page=0&size=10&status=AVAILABLE
-     * - GET /api/tickets?page=0&size=10&tripId=1
-     */
     @GetMapping
     public ResponseEntity<PageResponse<TicketResponse>> getTickets(
             @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,

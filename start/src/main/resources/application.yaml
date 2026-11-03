@@ -2,6 +2,17 @@ server:
   port: 8080
 
 spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000 # Mặc định TTL 10 phút (tính bằng ms)
+      cache-null-values: false # Tránh cache giá trị null vĩnh viễn
   application:
     name: tetrail-ticketing-system
 
