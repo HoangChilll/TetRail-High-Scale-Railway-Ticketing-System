@@ -5,6 +5,7 @@ import com.hoang.ddd.domain.model.entity.TicketStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,11 +38,11 @@ public interface TicketRepository {
     <S extends Ticket> List<S> saveAll(Iterable<S> entities);
 
     // Atomic update: Giữ chỗ vé
-    int reserveTickets(List<Long> ticketIds, Long bookingId, String passengerName);
+    int reserveTickets(List<Long> ticketIds, Long bookingId, String passengerName, Instant updatedAt);
 
     // Atomic update: Xác nhận phát hành vé sau khi thanh toán thành công
-    int issueTickets(Long bookingId);
+    int issueTickets(Long bookingId, Instant issuedAt);
 
     // Atomic update: Nhả vé về AVAILABLE khi booking hết hạn/bị hủy
-    int releaseTickets(Long bookingId);
+    int releaseTickets(Long bookingId, Instant updatedAt);
 }

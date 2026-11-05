@@ -69,7 +69,8 @@ public class BookTicketUseCase {
         int updatedCount = ticketRepository.reserveTickets(
                 ticketIds,
                 savedBooking.getId(),
-                command.getBuyerName());
+                command.getBuyerName(),
+                Instant.now());
 
         // 4. Nếu số vé update được < số vé yêu cầu -> Đã có người hớt tay trên
         if (updatedCount < ticketIds.size()) {

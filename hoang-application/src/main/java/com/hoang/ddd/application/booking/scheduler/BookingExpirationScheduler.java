@@ -45,7 +45,7 @@ public class BookingExpirationScheduler {
             bookingRepository.save(booking);
 
             // 2. Atomic Update nhả các vé liên quan về AVAILABLE và gỡ bỏ booking_id
-            int releasedCount = ticketRepository.releaseTickets(booking.getId());
+            int releasedCount = ticketRepository.releaseTickets(booking.getId(), Instant.now());
             log.info("Đã giải phóng {} vé của đơn {}", releasedCount, booking.getBookingCode());
         }
     }

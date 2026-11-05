@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,23 +51,24 @@ public interface JpaTicketRepository extends JpaRepository<Ticket, Long>, Ticket
                 SET t.booking.id = :bookingId,
                     t.passengerName = :passengerName,
                     t.status = com.hoang.ddd.domain.model.entity.TicketStatus.RESERVED,
-                    t.updatedAt = CURRENT_TIMESTAMP
+                    t.updatedAt = :updatedAt
                 WHERE t.id IN :ticketIds AND t.status = com.hoang.ddd.domain.model.entity.TicketStatus.AVAILABLE
             """)
     int reserveTickets(@Param("ticketIds") List<Long> ticketIds,
             @Param("bookingId") Long bookingId,
-            @Param("passengerName") String passengerName);
+            @Param("passengerName") String passengerName,
+            @Param("updatedAt") Instant updatedAt);
 
     // 2. Xuất vé sau khi thanh toán thành công
     @Modifying(clearAutomatically = true)
     @Query("""
                 UPDATE Ticket t
                 SET t.status = com.hoang.ddd.domain.model.entity.TicketStatus.ISSUED,
-                    t.issuedAt = CURRENT_TIMESTAMP,
-                    t.updatedAt = CURRENT_TIMESTAMP
+                    t.issuedAt = :issuedAt,
+                    t.updatedAt = :issuedAt
                 WHERE t.booking.id = :bookingId AND t.status = com.hoang.ddd.domain.model.entity.TicketStatus.RESERVED
             """)
-    int issueTickets(@Param("bookingId") Long bookingId);
+    int issueTickets(@Param("bookingId") Long bookingId, @Param("issuedAt") Instant issuedAt);
 
     // 3. Nhả vé về lại kho nếu đơn hàng hết hạn 10 phút
     @Modifying(clearAutomatically = true)
@@ -75,8 +77,8 @@ public interface JpaTicketRepository extends JpaRepository<Ticket, Long>, Ticket
                 SET t.booking = null,
                     t.passengerName = null,
                     t.status = com.hoang.ddd.domain.model.entity.TicketStatus.AVAILABLE,
-                    t.updatedAt = CURRENT_TIMESTAMP
+                    t.updatedAt = :updatedAt
                 WHERE t.booking.id = :bookingId AND t.status = com.hoang.ddd.domain.model.entity.TicketStatus.RESERVED
             """)
-    int releaseTickets(@Param("bookingId") Long bookingId);
+    int releaseTickets(@Param("bookingId") Long bookingId, @Param("updatedAt") Instant updatedAt);
 }
