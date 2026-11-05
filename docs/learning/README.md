@@ -67,6 +67,8 @@ Tổng 70 test: 62 đạt, 8 errors, 0 assertion failures, 0 skipped. Build **th
 
 **Kết quả chạy lại sau khi bản cũ được xóa:** `clean test` đi qua 5 module đầu nhưng `start` có 8 errors do lỗi query trong `JpaTicketRepository`: `CURRENT_TIMESTAMP` được Hibernate hiểu là `java.sql.Timestamp`, còn `Ticket.issuedAt` là `java.time.Instant`. Đã đổi ba câu UPDATE để nhận thời điểm kiểu `Instant` qua tham số, cập nhật chữ ký repository và nơi gọi. Chạy lại `clean test`: **BUILD SUCCESS, 70/70 test đạt**. Test hiện tại chứng minh query được Spring khởi tạo và suite hiện có chạy; chưa có integration test thực hiện cả ba câu UPDATE trên PostgreSQL thật. Các phần phía dưới mô tả ảnh chụp ban đầu của commit để bạn học cách tìm và sửa lỗi đầu tiên.
 
+**Cập nhật bài testing:** đã thêm bốn unit test booking và inject `Clock` để kiểm tra chính xác hạn giữ vé. Chạy `clean test` sau thay đổi: **BUILD SUCCESS, 74/74 test đạt**. Phần PostgreSQL/Testcontainers chưa chạy vì Docker engine hiện chưa hoạt động; xem [bài testing](01-testing.md).
+
 Report được sinh tại `<module>/target/surefire-reports/`; report và output build không được commit. Chưa kiểm tra Docker runtime, PostgreSQL/Redis thật hoặc deploy. Toàn bộ thay đổi được thêm trong lần nghiên cứu này là tài liệu trong `docs/learning`, không phải các bản sửa source được mô tả trong bài tập.
 
 ## 2. Những vấn đề cụ thể cần ưu tiên

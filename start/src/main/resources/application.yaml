@@ -2,6 +2,26 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: tetrail-ticketing-system
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tetrail}
+    username: ${SPRING_DATASOURCE_USERNAME:tetrail}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  flyway:
+    enabled: true
+    baseline-on-migrate: false
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    out-of-order: false
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -11,59 +31,29 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 600000 # Mặc định TTL 10 phút (tính bằng ms)
-      cache-null-values: false # Tránh cache giá trị null vĩnh viễn
-  application:
-    name: tetrail-ticketing-system
-
-  # 1. Cấu hình kết nối PostgreSQL
-  datasource:
-    url: jdbc:postgresql://localhost:5432/tetrail
-    username: hoang
-    password: abcde
-    driver-class-name: org.postgresql.Driver
-
-  # 2. Cấu hình JPA / Hibernate
-  jpa:
-    hibernate:
-      ddl-auto:  validate
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  flyway:
-    enabled: true
-    baseline-on-migrate: true       # Tự động tạo baseline nếu database đã có sẵn dữ liệu trước đó
-    baseline-version: 0             # Phiên bản baseline bắt đầu từ 0
-    locations: classpath:db/migration
-    validate-on-migrate: true       # Kiểm tra tính toàn vẹn của checksum
-    out-of-order: false
+      time-to-live: 600000
+      cache-null-values: false
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME:vutronghoang12072006@gmail.com}
-    password: ${MAIL_PASSWORD:your_16_character_app_password} # Mật khẩu ứng dụng (Google App Password)
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:noreply@tetrail.local}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
-          auth: true
+          auth: false
           starttls:
-            enable: true
-  # 7. Cấu hình Telegram Bot
+            enable: false
   telegram:
     bot:
-      token: ${TELEGRAM_BOT_TOKEN:123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ}
-# 3. Cấu hình thông số JWT (Bảo mật HMAC-SHA256 với Secret Key 256-bit)
+      token: ${TELEGRAM_BOT_TOKEN:unused-in-this-lab}
+
 jwt:
-  # Chuỗi Hex 64 ký tự = 256 bits (đáp ứng tiêu chuẩn JJWT 0.12.6)
-  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-  # Thời hạn Access Token: 86400000 ms = 24 giờ
+  # Base64 cua it nhat 32 byte ngau nhien, theo JwtTokenProvider.
+  secret: ${JWT_SECRET}
   expiration: 86400000
-    # Thời hạn Refresh Token: 604800000 ms = 7 ngày
   refresh-expiration: 604800000
 
-
-# 4. Resilience4j cấu hình sẵn có của bạn
 resilience4j:
   circuitbreaker:
     config:
@@ -74,7 +64,7 @@ resilience4j:
         minimumNumberOfCalls: 20
         waitDurationInOpenState: 50s
         failureRateThreshold: 50
-        eventConsumerBufferSize: 10
+        eventConsumerBufferSize: 100
   ratelimiter:
     instances:
       backendA:
@@ -88,7 +78,6 @@ resilience4j:
         limitRefreshPeriod: 500ms
         timeoutDuration: 3s
 
-# 5. Spring Boot Actuator
 management:
   health:
     circuitbreakers:
@@ -96,8 +85,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info
   endpoint:
     health:
-      show-details: always
-
+      show-details: never

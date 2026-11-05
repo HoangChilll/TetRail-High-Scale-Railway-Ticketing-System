@@ -88,8 +88,14 @@ public class SecurityConfig {
 
                 // 5. URL Authorizations
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh", "/api/auth/logout").permitAll()
-                        .anyRequest().authenticated())
+        .requestMatchers("/actuator/health").permitAll()
+        .requestMatchers(
+                "/api/auth/register",
+                "/api/auth/login",
+                "/api/auth/refresh",
+                "/api/auth/logout"
+        ).permitAll()
+        .anyRequest().authenticated())
 
                 // 6. Chèn JWT Filter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

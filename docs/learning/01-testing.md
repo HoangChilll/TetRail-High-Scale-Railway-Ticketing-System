@@ -1,6 +1,17 @@
 # Bài thực hành testing
 
-Đọc [bài 0](README.md) trước. Các đoạn code trong bài là mẫu thực hành khớp API hiện tại, chưa được thêm vào source/test hay chạy như một phần của suite.
+Đọc [bài 0](README.md) trước. **Cập nhật 05/11/2026:** test booking và `Clock` đã được cài vào code, chạy `clean test` thành công: 74/74 test đạt (4 test mới). Các phần PostgreSQL/Testcontainers phía dưới vẫn là bài thực hành chưa chạy vì Docker engine trên máy khảo sát chưa hoạt động.
+
+## Kiến thức nền trong 5 phút
+
+- **Unit test:** gọi một class Java thật, thay dependency bên ngoài bằng mock. Nhanh và dễ cô lập lỗi; không chạy SQL, transaction hoặc Spring cache proxy.
+- **Integration test:** ghép các thành phần thật để kiểm tra chúng phối hợp với nhau. `@SpringBootTest` khởi động context; test PostgreSQL dùng DB thật trong container còn kiểm tra Flyway/JPA/transaction.
+- **Mock:** object giả do Mockito tạo, bạn định trước nó trả gì (`when(...).thenReturn(...)`) và kiểm tra có được gọi không (`verify(...)`). Nó không lưu dữ liệu thật.
+- **Assertion:** câu khẳng định kết quả; sai thì test đỏ. Ví dụ `assertThat(total).isEqualByComparingTo("250000")`.
+- **Fixture:** dữ liệu dựng trước để test chạy. Fixture cần đủ để tái hiện tình huống, không cần sao chép toàn bộ hệ thống.
+- **Transaction:** một nhóm thao tác DB cùng thành công hoặc cùng rollback. Muốn chứng minh rollback phải đọc DB thật **sau** transaction thất bại; Mockito chỉ thấy exception.
+- **Clock cố định:** thay đồng hồ hệ thống bằng thời điểm do test chọn, giúp kiểm tra chính xác “10 phút sau” mà không chờ 10 phút.
+- **Testcontainers:** thư viện khởi động PostgreSQL tạm trong Docker khi chạy integration test; kết thúc test thì container được dọn. Nó cần Docker engine đang chạy.
 
 ## 1. Chọn loại test bằng câu hỏi cần trả lời
 
@@ -23,7 +34,7 @@ Một test gọi `new BookTicketUseCase(...)` không có Spring proxy: `@Transac
 hoang-application/src/test/java/com/hoang/ddd/application/booking/usecase/BookTicketUseCaseTest.java
 ```
 
-Không cần thêm dependency: root POM đã có Spring Boot starter test chứa JUnit, Mockito, AssertJ.
+File test đã được tạo trong repo. Không cần thêm dependency: root POM đã có Spring Boot starter test chứa JUnit, Mockito, AssertJ. Hãy mở file này và tự gõ lại từng test vào một nhánh học tập nếu muốn luyện tay.
 
 Đọc test theo ba bước: **Arrange** tạo đầu vào và hành vi dependency; **Act** gọi hành vi cần kiểm tra; **Assert** kiểm tra kết quả có ý nghĩa nghiệp vụ.
 
@@ -44,6 +55,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -60,7 +74,8 @@ class BookTicketUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        useCase = new BookTicketUseCase(bookings, tickets, users);
+        Clock clock = Clock.fixed(Instant.parse("2026-11-05T00:00:00Z"), ZoneOffset.UTC);
+        useCase = new BookTicketUseCase(bookings, tickets, users, clock);
     }
 
     private CreateBookingCommand command() {
@@ -91,7 +106,8 @@ class BookTicketUseCaseTest {
         var command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
         assignBookingIdWhenSaved();
-        when(tickets.reserveTickets(command.getTicketIds(), 99L, command.getBuyerName()))
+        when(tickets.reserveTickets(command.getTicketIds(), 99L, command.getBuyerName(),
+                Instant.parse("2026-11-05T00:00:00Z")))
                 .thenReturn(2);
 
         var result = useCase.execute(command, null);
@@ -103,7 +119,8 @@ class BookTicketUseCaseTest {
         var saved = ArgumentCaptor.forClass(Booking.class);
         verify(bookings).save(saved.capture());
         assertThat(saved.getValue().getBuyerEmail()).isEqualTo(command.getBuyerEmail());
-        verify(tickets).reserveTickets(command.getTicketIds(), 99L, command.getBuyerName());
+        verify(tickets).reserveTickets(command.getTicketIds(), 99L, command.getBuyerName(),
+                Instant.parse("2026-11-05T00:00:00Z"));
     }
 
     @Test
@@ -116,7 +133,7 @@ class BookTicketUseCaseTest {
                 .isInstanceOf(IllegalArgumentException.class);
 
         verifyNoInteractions(bookings);
-        verify(tickets, never()).reserveTickets(anyList(), anyLong(), anyString());
+        verify(tickets, never()).reserveTickets(anyList(), anyLong(), anyString(), any(Instant.class));
     }
 
     @Test
@@ -124,7 +141,8 @@ class BookTicketUseCaseTest {
         var command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
         assignBookingIdWhenSaved();
-        when(tickets.reserveTickets(command.getTicketIds(), 99L, command.getBuyerName()))
+        when(tickets.reserveTickets(command.getTicketIds(), 99L, command.getBuyerName(),
+                Instant.parse("2026-11-05T00:00:00Z")))
                 .thenReturn(1);
 
         assertThatThrownBy(() -> useCase.execute(command, null))
@@ -135,7 +153,7 @@ class BookTicketUseCaseTest {
 
 Test cuối đặc tả exception hiện tại. Sau khi tạo `TicketUnavailableException`, cập nhật assertion sang exception đó. **Không** viết `verify(bookings).delete(...)`: transaction rollback không phải use case gọi delete thủ công.
 
-Chạy riêng:
+Để chạy riêng, sau khi đã từng chạy `clean test` bằng Java 21:
 
 ```powershell
 .\mvnw.cmd -pl hoang-application -am test '-Dtest=BookTicketUseCaseTest' '-Dsurefire.failIfNoSpecifiedTests=false'
@@ -156,9 +174,11 @@ Giải thích từng công cụ:
 
 `Instant.now()` trong use case làm assertion thời điểm hết hạn khó chính xác. Inject `java.time.Clock`:
 
-1. Thêm `private final Clock clock;` vào bản `BookTicketUseCase` đang được dùng.
-2. Đổi thời gian hết hạn thành `Instant.now(clock).plus(10, ChronoUnit.MINUTES)`.
-3. Tạo bean Clock trong package `com.hoang` thuộc `start`:
+Ba bước sau đã được cài trong repo; hãy đọc và giải thích lại chúng:
+
+1. `private final Clock clock;` được thêm vào bản `BookTicketUseCase` đang dùng.
+2. Use case lấy `Instant now = Instant.now(clock)` một lần, dùng cho thời hạn `now.plus(10, ChronoUnit.MINUTES)` và thời điểm cập nhật vé.
+3. Bean Clock trong package `com.hoang` thuộc `start`:
 
 ```java
 package com.hoang;
@@ -183,7 +203,7 @@ Clock clock = Clock.fixed(Instant.parse("2026-11-05T00:00:00Z"), ZoneOffset.UTC)
 useCase = new BookTicketUseCase(bookings, tickets, users, clock);
 ```
 
-5. Trong test thành công, assert `expiresAt` bằng `2026-11-05T00:10:00Z`.
+5. Test thành công assert `expiresAt` bằng `2026-11-05T00:10:00Z`.
 
 Thêm import `java.time.Clock`, `Instant`, `ZoneOffset`. Bạn không cần mock Clock: clock cố định là implementation thật phù hợp cho test.
 

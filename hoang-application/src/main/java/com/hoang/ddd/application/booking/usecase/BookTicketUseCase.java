@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -28,6 +29,7 @@ public class BookTicketUseCase {
     private final BookingRepository bookingRepository;
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final Clock clock;
 
     @CacheEvict(value = "trip_tickets", allEntries = true)
     @Transactional
@@ -51,6 +53,7 @@ public class BookTicketUseCase {
 
         // 2. Tạo đơn Booking (PENDING, giữ chỗ trong 10 phút)
         String bookingCode = "BK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        Instant now = Instant.now(clock);
         Booking booking = Booking.builder()
                 .bookingCode(bookingCode)
                 .user(user)
@@ -60,7 +63,7 @@ public class BookTicketUseCase {
                 .totalAmount(totalAmount)
                 .currency("VND")
                 .status(BookingStatus.PENDING)
-                .expiresAt(Instant.now().plus(10, ChronoUnit.MINUTES))
+                .expiresAt(now.plus(10, ChronoUnit.MINUTES))
                 .build();
 
         Booking savedBooking = bookingRepository.save(booking);
@@ -70,7 +73,7 @@ public class BookTicketUseCase {
                 ticketIds,
                 savedBooking.getId(),
                 command.getBuyerName(),
-                Instant.now());
+                now);
 
         // 4. Nếu số vé update được < số vé yêu cầu -> Đã có người hớt tay trên
         if (updatedCount < ticketIds.size()) {

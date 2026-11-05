@@ -1,0 +1,6 @@
+**
+!start/
+!start/target/
+!start/target/hoang-start-1.0-SNAPSHOT.jar
+!Dockerfile
+!.dockerignore
