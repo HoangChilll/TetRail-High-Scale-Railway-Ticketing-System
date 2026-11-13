@@ -1,7 +1,7 @@
 package com.hoang.ddd.controller.booking;
 
-import com.hoang.ddd.application.booking.dto.BookingResponse;
-import com.hoang.ddd.application.booking.dto.CreateBookingCommand;
+import com.hoang.ddd.application.booking.dto.response.BookingResponse;
+import com.hoang.ddd.application.booking.dto.command.CreateBookingCommand;
 import com.hoang.ddd.application.booking.usecase.BookTicketUseCase;
 import com.hoang.ddd.infrastructure.security.UserDetailsCustom;
 import com.hoang.ddd.infrastructure.security.annotation.CurrentUser;

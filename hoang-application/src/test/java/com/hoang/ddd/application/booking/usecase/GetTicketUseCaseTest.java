@@ -1,7 +1,7 @@
 package com.hoang.ddd.application.booking.usecase;
 
-import com.hoang.ddd.application.booking.dto.TicketResponse;
-import com.hoang.ddd.application.common.dto.PageResponse;
+import com.hoang.ddd.application.booking.dto.response.TicketResponse;
+import com.hoang.ddd.application.common.dto.response.PageResponse;
 import com.hoang.ddd.domain.model.entity.Seat;
 import com.hoang.ddd.domain.model.entity.Ticket;
 import com.hoang.ddd.domain.model.entity.TicketStatus;

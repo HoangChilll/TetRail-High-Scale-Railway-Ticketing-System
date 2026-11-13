@@ -1,7 +1,7 @@
-package com.hoang.ddd.application.usecase;
+package com.hoang.ddd.application.auth.usecase;
 
-import com.hoang.ddd.application.auth.dto.LoginCommand;
-import com.hoang.ddd.application.auth.dto.TokenResponse;
+import com.hoang.ddd.application.auth.dto.command.LoginCommand;
+import com.hoang.ddd.application.auth.dto.response.TokenResponse;
 import com.hoang.ddd.domain.model.entity.RefreshToken;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;

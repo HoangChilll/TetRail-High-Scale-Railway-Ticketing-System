@@ -1,4 +1,4 @@
-package com.hoang.ddd.application.auth.dto;
+package com.hoang.ddd.application.auth.dto.response;
 
 import lombok.*;
 

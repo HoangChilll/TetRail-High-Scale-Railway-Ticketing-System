@@ -1,14 +1,14 @@
 package com.hoang.ddd.controller.auth;
 
-import com.hoang.ddd.application.auth.dto.LoginCommand;
-import com.hoang.ddd.application.usecase.LoginUseCase;
-import com.hoang.ddd.application.auth.dto.LogoutCommand;
-import com.hoang.ddd.application.auth.dto.RefreshTokenCommand;
-import com.hoang.ddd.application.usecase.RefreshTokenUseCase;
-import com.hoang.ddd.application.auth.dto.RegisterCommand;
-import com.hoang.ddd.application.usecase.RegisterUseCase;
-import com.hoang.ddd.application.auth.dto.TokenResponse;
-import com.hoang.ddd.application.auth.dto.UserResponse;
+import com.hoang.ddd.application.auth.dto.command.LoginCommand;
+import com.hoang.ddd.application.auth.usecase.LoginUseCase;
+import com.hoang.ddd.application.auth.dto.command.LogoutCommand;
+import com.hoang.ddd.application.auth.dto.command.RefreshTokenCommand;
+import com.hoang.ddd.application.auth.usecase.RefreshTokenUseCase;
+import com.hoang.ddd.application.auth.dto.command.RegisterCommand;
+import com.hoang.ddd.application.auth.usecase.RegisterUseCase;
+import com.hoang.ddd.application.auth.dto.response.TokenResponse;
+import com.hoang.ddd.application.auth.dto.response.UserResponse;
 import com.hoang.ddd.infrastructure.security.UserDetailsCustom;
 import com.hoang.ddd.infrastructure.security.annotation.CurrentUser;
 import jakarta.validation.Valid;

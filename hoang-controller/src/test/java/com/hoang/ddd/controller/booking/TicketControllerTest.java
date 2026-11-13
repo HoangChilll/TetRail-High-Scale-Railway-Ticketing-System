@@ -1,10 +1,10 @@
 package com.hoang.ddd.controller.booking;
 
-import com.hoang.ddd.application.booking.dto.TicketResponse;
+import com.hoang.ddd.application.booking.dto.response.TicketResponse;
 import com.hoang.ddd.application.booking.usecase.GetTicketByCodeUseCase;
 import com.hoang.ddd.application.booking.usecase.GetTicketByIdUseCase;
 import com.hoang.ddd.application.booking.usecase.GetTicketsPageUseCase;
-import com.hoang.ddd.application.common.dto.PageResponse;
+import com.hoang.ddd.application.common.dto.response.PageResponse;
 import com.hoang.ddd.controller.advice.GlobalExceptionHandler;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

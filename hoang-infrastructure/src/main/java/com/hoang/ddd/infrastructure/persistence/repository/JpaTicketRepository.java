@@ -71,7 +71,7 @@ public interface JpaTicketRepository extends JpaRepository<Ticket, Long>, Ticket
     int issueTickets(@Param("bookingId") Long bookingId, @Param("issuedAt") Instant issuedAt);
 
     // 3. Nhả vé về lại kho nếu đơn hàng hết hạn 10 phút
-    @Modifying(clearAutomatically = true)
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("""
                 UPDATE Ticket t
                 SET t.booking = null,

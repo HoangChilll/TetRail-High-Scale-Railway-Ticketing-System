@@ -3,7 +3,6 @@ package com.hoang.ddd.application.service.notification;
 import com.hoang.ddd.domain.notification.NotificationChannel;
 import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.notification.NotificationSender;
-import com.hoang.ddd.domain.notification.NotificationSenderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +18,23 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
 
-    @Mock
-    private NotificationSenderFactory mailFactory;
+    @Test
+    void rejectsDuplicateChannels() {
+        NotificationSender secondSender = mock(NotificationSender.class);
+        when(secondSender.getChannel()).thenReturn(NotificationChannel.EMAIL);
+
+        assertThrows(IllegalStateException.class,
+                () -> new NotificationService(List.of(mailSender, secondSender)));
+    }
+
+    @Test
+    void propagatesSenderFailure() {
+        NotificationMessage message = NotificationMessage.builder().content("Test").build();
+        doThrow(new IllegalStateException("Send failed")).when(mailSender).send(message);
+
+        assertThrows(IllegalStateException.class,
+                () -> notificationService.send(NotificationChannel.EMAIL, message));
+    }
 
     @Mock
     private NotificationSender mailSender;
@@ -29,17 +43,14 @@ class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Giả lập mailFactory nhận diện kênh EMAIL và tạo ra mailSender
-        when(mailFactory.getChannel()).thenReturn(NotificationChannel.EMAIL);
+        when(mailSender.getChannel()).thenReturn(NotificationChannel.EMAIL);
 
-        // Khởi tạo Service với danh sách các Factory
-        notificationService = new NotificationService(List.of(mailFactory));
+        notificationService = new NotificationService(List.of(mailSender));
     }
 
     @Test
-    @DisplayName("Gửi qua EMAIL thành công: Factory tạo đúng MailSender và gọi send()")
+    @DisplayName("Gửi qua EMAIL bằng MailSender")
     void send_Email_Success() {
-        when(mailFactory.createSender()).thenReturn(mailSender);
 
         NotificationMessage message = NotificationMessage.builder()
                 .recipient("test@tetrail.vn")
@@ -50,13 +61,11 @@ class NotificationServiceTest {
         // ACT
         notificationService.send(NotificationChannel.EMAIL, message);
 
-        // ASSERT: Xác minh Factory Method hoạt động chuẩn
-        verify(mailFactory, times(1)).createSender();
         verify(mailSender, times(1)).send(message);
     }
 
     @Test
-    @DisplayName("Ném ngoại lệ khi kênh chưa có Factory hỗ trợ")
+    @DisplayName("Ném ngoại lệ khi kênh chưa có Sender hỗ trợ")
     void send_ThrowsException_WhenChannelNotSupported() {
         NotificationMessage message = NotificationMessage.builder()
                 .recipient("123456789")

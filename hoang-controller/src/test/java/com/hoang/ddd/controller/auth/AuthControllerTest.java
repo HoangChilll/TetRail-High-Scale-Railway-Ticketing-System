@@ -1,10 +1,15 @@
 package com.hoang.ddd.controller.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoang.ddd.application.auth.dto.*;
-import com.hoang.ddd.application.usecase.LoginUseCase;
-import com.hoang.ddd.application.usecase.RefreshTokenUseCase;
-import com.hoang.ddd.application.usecase.RegisterUseCase;
+import com.hoang.ddd.application.auth.dto.command.LoginCommand;
+import com.hoang.ddd.application.auth.dto.command.LogoutCommand;
+import com.hoang.ddd.application.auth.dto.command.RefreshTokenCommand;
+import com.hoang.ddd.application.auth.dto.command.RegisterCommand;
+import com.hoang.ddd.application.auth.dto.response.TokenResponse;
+import com.hoang.ddd.application.auth.dto.response.UserResponse;
+import com.hoang.ddd.application.auth.usecase.LoginUseCase;
+import com.hoang.ddd.application.auth.usecase.RefreshTokenUseCase;
+import com.hoang.ddd.application.auth.usecase.RegisterUseCase;
 import com.hoang.ddd.controller.advice.GlobalExceptionHandler;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;

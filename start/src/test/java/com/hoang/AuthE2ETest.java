@@ -2,10 +2,10 @@ package com.hoang;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hoang.ddd.application.auth.dto.LoginCommand;
-import com.hoang.ddd.application.auth.dto.LogoutCommand;
-import com.hoang.ddd.application.auth.dto.RefreshTokenCommand;
-import com.hoang.ddd.application.auth.dto.RegisterCommand;
+import com.hoang.ddd.application.auth.dto.command.LoginCommand;
+import com.hoang.ddd.application.auth.dto.command.LogoutCommand;
+import com.hoang.ddd.application.auth.dto.command.RefreshTokenCommand;
+import com.hoang.ddd.application.auth.dto.command.RegisterCommand;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;

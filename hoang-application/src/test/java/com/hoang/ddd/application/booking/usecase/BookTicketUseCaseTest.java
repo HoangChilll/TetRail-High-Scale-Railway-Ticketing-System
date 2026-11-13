@@ -1,6 +1,7 @@
 package com.hoang.ddd.application.booking.usecase;
 
-import com.hoang.ddd.application.booking.dto.CreateBookingCommand;
+import com.hoang.ddd.application.booking.dto.command.CreateBookingCommand;
+import com.hoang.ddd.application.booking.exception.TicketUnavailableException;
 import com.hoang.ddd.domain.model.entity.Booking;
 import com.hoang.ddd.domain.model.entity.Ticket;
 import com.hoang.ddd.domain.model.entity.User;
@@ -111,7 +112,7 @@ class BookTicketUseCaseTest {
                 .thenReturn(1);
 
         assertThatThrownBy(() -> useCase.execute(command, null))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(TicketUnavailableException.class);
     }
 
     @Test

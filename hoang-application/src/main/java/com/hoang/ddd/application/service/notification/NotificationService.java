@@ -3,46 +3,32 @@ package com.hoang.ddd.application.service.notification;
 import com.hoang.ddd.domain.notification.NotificationChannel;
 import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.notification.NotificationSender;
-import com.hoang.ddd.domain.notification.NotificationSenderFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 public class NotificationService {
 
-    // Bảng tra cứu Factory theo Kênh: Không cần if-else!
-    private final Map<NotificationChannel, NotificationSenderFactory> factoryMap;
+    private final Map<NotificationChannel, NotificationSender> senders = new HashMap<>();
 
-    public NotificationService(List<NotificationSenderFactory> factories) {
-        // Tự động map từng Factory với Channel tương ứng
-        this.factoryMap = factories.stream()
-                .collect(Collectors.toMap(
-                        NotificationSenderFactory::getChannel,
-                        Function.identity()));
-        log.info("[NotificationService] Đã nạp thành công {} factories: {}", factoryMap.size(), factoryMap.keySet());
+    public NotificationService(List<NotificationSender> notificationSenders) {
+        for (NotificationSender sender : notificationSenders) {
+            NotificationChannel channel = sender.getChannel();
+            if (senders.containsKey(channel)) {
+                throw new IllegalStateException("Trùng kênh thông báo: " + channel);
+            }
+            senders.put(channel, sender);
+        }
     }
 
-    /**
-     * Gửi thông báo đến kênh mong muốn
-     */
     public void send(NotificationChannel channel, NotificationMessage message) {
-        NotificationSenderFactory factory = factoryMap.get(channel);
-
-        if (factory == null) {
-            log.error("Không tìm thấy Factory cho kênh thông báo: {}", channel);
+        NotificationSender sender = senders.get(channel);
+        if (sender == null) {
             throw new IllegalArgumentException("Hệ thống chưa hỗ trợ kênh thông báo: " + channel);
         }
-
-        // Áp dụng Factory Method: Khởi tạo Sender tương ứng
-        NotificationSender sender = factory.createSender();
-
-        // Thực thi gửi
         sender.send(message);
     }
 }

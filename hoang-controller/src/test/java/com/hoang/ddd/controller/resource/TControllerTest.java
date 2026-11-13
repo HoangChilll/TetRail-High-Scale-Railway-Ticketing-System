@@ -92,7 +92,7 @@ class TControllerTest {
     @Test
     @DisplayName("Fallback Method: Trả về thông báo khi bị quá tải rate limit")
     void fallbackHello_DirectCall() {
-        TController controller = new TController();
+        TController controller = new TController(eventAppService);
         String result = controller.fallbackHello(new RuntimeException("Rate limit exceeded"));
         org.junit.jupiter.api.Assertions.assertEquals("too many request", result);
     }

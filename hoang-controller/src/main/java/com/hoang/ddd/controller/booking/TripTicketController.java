@@ -1,6 +1,6 @@
 package com.hoang.ddd.controller.booking;
 
-import com.hoang.ddd.application.booking.dto.TicketResponse;
+import com.hoang.ddd.application.booking.dto.response.TicketResponse;
 import com.hoang.ddd.application.booking.usecase.GetTripTicketsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

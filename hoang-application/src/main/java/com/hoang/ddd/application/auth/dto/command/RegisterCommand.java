@@ -1,4 +1,4 @@
-package com.hoang.ddd.application.auth.dto;
+package com.hoang.ddd.application.auth.dto.command;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

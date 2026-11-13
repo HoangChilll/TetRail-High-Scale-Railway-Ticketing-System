@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.CacheEvict;
 import java.time.Instant;
+import java.time.Clock;
 import java.util.List;
 
 @Slf4j
@@ -20,6 +20,7 @@ public class BookingExpirationScheduler {
 
     private final BookingRepository bookingRepository;
     private final TicketRepository ticketRepository;
+    private final Clock clock;
 
     /**
      * Định kỳ mỗi 1 phút quét và hủy các đơn Booking PENDING đã quá hạn 10 phút,
@@ -28,9 +29,10 @@ public class BookingExpirationScheduler {
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void releaseExpiredBookings() {
+        Instant now = Instant.now(clock);
         List<Booking> expiredBookings = bookingRepository.findByStatusAndExpiresAtBefore(
                 BookingStatus.PENDING,
-                Instant.now());
+                now);
 
         if (!expiredBookings.isEmpty()) {
             log.info("Tìm thấy {} đơn đặt vé quá hạn cần giải phóng", expiredBookings.size());
@@ -41,11 +43,11 @@ public class BookingExpirationScheduler {
 
             // 1. Chuyển trạng thái booking thành CANCELLED
             booking.setStatus(BookingStatus.CANCELLED);
-            booking.setCancelledAt(Instant.now());
+            booking.setCancelledAt(now);
             bookingRepository.save(booking);
 
             // 2. Atomic Update nhả các vé liên quan về AVAILABLE và gỡ bỏ booking_id
-            int releasedCount = ticketRepository.releaseTickets(booking.getId(), Instant.now());
+            int releasedCount = ticketRepository.releaseTickets(booking.getId(), now);
             log.info("Đã giải phóng {} vé của đơn {}", releasedCount, booking.getBookingCode());
         }
     }

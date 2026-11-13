@@ -1,7 +1,7 @@
 package com.hoang.ddd.application.booking.usecase;
 
-import com.hoang.ddd.application.booking.dto.BookingResponse;
-import com.hoang.ddd.application.booking.dto.CreateBookingCommand;
+import com.hoang.ddd.application.booking.dto.response.BookingResponse;
+import com.hoang.ddd.application.booking.dto.command.CreateBookingCommand;
 import com.hoang.ddd.application.booking.exception.TicketUnavailableException;
 import com.hoang.ddd.domain.model.entity.Booking;
 import com.hoang.ddd.domain.model.entity.BookingStatus;
@@ -43,9 +43,10 @@ public class BookTicketUseCase {
             throw new IllegalArgumentException("Một số vé không tồn tại trong hệ thống!");
         }
 
-        BigDecimal totalAmount = tickets.stream()
-                .map(Ticket::getFare)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        for (Ticket ticket : tickets) {
+            totalAmount = totalAmount.add(ticket.getFare());
+        }
 
         User user = null;
         if (userId != null) {

@@ -1,6 +1,6 @@
 package com.hoang.ddd.application.booking.usecase;
 
-import com.hoang.ddd.application.booking.dto.TicketResponse;
+import com.hoang.ddd.application.booking.dto.response.TicketResponse;
 import com.hoang.ddd.domain.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

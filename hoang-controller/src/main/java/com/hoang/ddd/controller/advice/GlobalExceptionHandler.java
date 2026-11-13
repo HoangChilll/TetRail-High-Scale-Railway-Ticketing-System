@@ -14,10 +14,24 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
+import com.hoang.ddd.application.booking.exception.TicketUnavailableException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+        @ExceptionHandler(TicketUnavailableException.class)
+        public ResponseEntity<ErrorResponse> handleTicketUnavailable(
+                TicketUnavailableException ex,
+                HttpServletRequest request) {
 
+                ErrorResponse response = ErrorResponse.builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .error("Conflict")
+                        .message(ex.getMessage())
+                        .path(getPath(request))
+                        .timestamp(LocalDateTime.now().toString())
+                        .build();
+
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        }
         // 1. Bắt lỗi Validation đầu vào (@NotBlank, @Size, @Email trên DTO)
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<ErrorResponse> handleValidationExceptions(
@@ -124,4 +138,5 @@ public class GlobalExceptionHandler {
                 }
                 return request.getServletPath();
         }
+
 }

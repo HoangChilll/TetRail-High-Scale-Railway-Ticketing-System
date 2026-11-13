@@ -1,7 +1,8 @@
-package com.hoang.ddd.application.auth.dto;
+package com.hoang.ddd.application.auth.usecase;
 
 import com.hoang.ddd.application.service.notification.NotificationService;
-import com.hoang.ddd.application.usecase.RegisterUseCase;
+import com.hoang.ddd.application.auth.dto.command.RegisterCommand;
+import com.hoang.ddd.application.auth.dto.response.UserResponse;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
 import com.hoang.ddd.domain.model.entity.UserStatus;

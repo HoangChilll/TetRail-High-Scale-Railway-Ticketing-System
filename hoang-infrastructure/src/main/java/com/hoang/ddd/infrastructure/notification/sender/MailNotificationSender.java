@@ -3,17 +3,24 @@ package com.hoang.ddd.infrastructure.notification.sender;
 import com.hoang.ddd.domain.notification.NotificationChannel;
 import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.notification.NotificationSender;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class MailNotificationSender implements NotificationSender {
 
     private final JavaMailSender javaMailSender;
     private final String fromAddress;
+
+    public MailNotificationSender(JavaMailSender javaMailSender,
+            @Value("${spring.mail.username:noreply@tetrail.com}") String fromAddress) {
+        this.javaMailSender = javaMailSender;
+        this.fromAddress = fromAddress;
+    }
 
     @Override
     public void send(NotificationMessage message) {

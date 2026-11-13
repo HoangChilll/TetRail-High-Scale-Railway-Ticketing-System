@@ -3,18 +3,24 @@ package com.hoang.ddd.infrastructure.notification.sender;
 import com.hoang.ddd.domain.notification.NotificationChannel;
 import com.hoang.ddd.domain.notification.NotificationMessage;
 import com.hoang.ddd.domain.notification.NotificationSender;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class TelegramNotificationSender implements NotificationSender {
 
     private final RestClient restClient;
     private final String botToken;
+
+    public TelegramNotificationSender(@Value("${telegram.bot.token:mock-telegram-token}") String botToken) {
+        this.restClient = RestClient.builder().build();
+        this.botToken = botToken;
+    }
 
     @Override
     public void send(NotificationMessage message) {

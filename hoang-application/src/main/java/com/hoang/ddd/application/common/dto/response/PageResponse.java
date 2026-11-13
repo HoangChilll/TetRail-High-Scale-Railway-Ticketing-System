@@ -1,4 +1,4 @@
-package com.hoang.ddd.application.common.dto;
+package com.hoang.ddd.application.common.dto.response;
 
 import lombok.*;
 import org.springframework.data.domain.Page;

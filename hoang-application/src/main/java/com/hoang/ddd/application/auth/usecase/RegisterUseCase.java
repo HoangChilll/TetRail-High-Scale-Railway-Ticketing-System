@@ -1,7 +1,7 @@
-package com.hoang.ddd.application.usecase;
+package com.hoang.ddd.application.auth.usecase;
 
-import com.hoang.ddd.application.auth.dto.RegisterCommand;
-import com.hoang.ddd.application.auth.dto.UserResponse;
+import com.hoang.ddd.application.auth.dto.command.RegisterCommand;
+import com.hoang.ddd.application.auth.dto.response.UserResponse;
 import com.hoang.ddd.application.service.notification.NotificationService;
 import com.hoang.ddd.domain.model.entity.Role;
 import com.hoang.ddd.domain.model.entity.User;
@@ -53,7 +53,6 @@ public class RegisterUseCase {
                 .status(UserStatus.ACTIVE)
                 .roles(Set.of(defaultRole))
                 .build();
-        // Gửi email chào mừng người dùng mới
 
         // 5. Lưu vào Database
         User savedUser = userRepository.save(user);

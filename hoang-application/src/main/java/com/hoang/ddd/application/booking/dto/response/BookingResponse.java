@@ -1,4 +1,4 @@
-package com.hoang.ddd.application.booking.dto;
+package com.hoang.ddd.application.booking.dto.response;
 
 import com.hoang.ddd.domain.model.entity.Booking;
 import lombok.*;
