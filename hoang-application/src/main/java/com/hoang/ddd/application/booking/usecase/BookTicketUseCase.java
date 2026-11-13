@@ -2,6 +2,7 @@ package com.hoang.ddd.application.booking.usecase;
 
 import com.hoang.ddd.application.booking.dto.BookingResponse;
 import com.hoang.ddd.application.booking.dto.CreateBookingCommand;
+import com.hoang.ddd.application.booking.exception.TicketUnavailableException;
 import com.hoang.ddd.domain.model.entity.Booking;
 import com.hoang.ddd.domain.model.entity.BookingStatus;
 import com.hoang.ddd.domain.model.entity.Ticket;
@@ -76,9 +77,8 @@ public class BookTicketUseCase {
                 now);
 
         // 4. Nếu số vé update được < số vé yêu cầu -> Đã có người hớt tay trên
-        if (updatedCount < ticketIds.size()) {
-            // Ném exception để transaction tự động ROLLBACK hoàn toàn đơn Booking
-            throw new IllegalStateException("Một số vé bạn chọn vừa có người khác giữ chỗ. Vui lòng chọn lại!");
+        if (updatedCount != ticketIds.size()) {
+            throw new TicketUnavailableException();
         }
 
         return BookingResponse.of(savedBooking);
