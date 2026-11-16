@@ -1,6 +1,7 @@
 package com.hoang.ddd.application.booking.usecase;
 
 import com.hoang.ddd.application.booking.dto.response.TicketResponse;
+import com.hoang.ddd.application.booking.service.TicketAccessPolicy;
 import com.hoang.ddd.application.common.dto.response.PageResponse;
 import com.hoang.ddd.domain.model.entity.Ticket;
 import com.hoang.ddd.domain.model.entity.TicketStatus;
@@ -16,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetTicketsPageUseCase {
 
     private final TicketRepository ticketRepository;
+    private final TicketAccessPolicy accessPolicy;
 
     @Transactional(readOnly = true)
     public PageResponse<TicketResponse> execute(Pageable pageable, Long tripId, TicketStatus status) {
+        accessPolicy.requireAdmin();
         Page<Ticket> ticketPage;
         if (tripId != null) {
             ticketPage = ticketRepository.findByTripId(tripId, pageable);

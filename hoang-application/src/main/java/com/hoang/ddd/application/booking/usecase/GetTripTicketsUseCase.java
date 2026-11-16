@@ -1,6 +1,6 @@
 package com.hoang.ddd.application.booking.usecase;
 
-import com.hoang.ddd.application.booking.dto.response.TicketResponse;
+import com.hoang.ddd.application.booking.dto.response.SeatAvailabilityResponse;
 import com.hoang.ddd.domain.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,12 +14,12 @@ public class GetTripTicketsUseCase {
 
     private final TicketRepository ticketRepository;
 
-    @Cacheable(value = "trip_tickets", key = "#tripId", unless = "#result == null || #result.isEmpty()")
+    @Cacheable(value = "trip_tickets", key = "'seats:v2:' + #tripId", unless = "#result == null || #result.isEmpty()")
     @Transactional(readOnly = true)
-    public List<TicketResponse> execute(Long tripId) {
+    public List<SeatAvailabilityResponse> execute(Long tripId) {
         return ticketRepository.findByTripId(tripId)
                 .stream()
-                .map(TicketResponse::of)
+                .map(SeatAvailabilityResponse::of)
                 .toList();
     }
 }

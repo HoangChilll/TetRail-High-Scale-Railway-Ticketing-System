@@ -1,6 +1,8 @@
 package com.hoang.ddd.application.booking.usecase;
 
 import com.hoang.ddd.application.booking.dto.response.TicketResponse;
+import com.hoang.ddd.application.booking.service.TicketAccessPolicy;
+import com.hoang.ddd.application.booking.service.TicketResponseCache;
 import com.hoang.ddd.application.common.dto.response.PageResponse;
 import com.hoang.ddd.domain.model.entity.Seat;
 import com.hoang.ddd.domain.model.entity.Ticket;
@@ -36,9 +38,11 @@ class GetTicketUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        getTicketsPageUseCase = new GetTicketsPageUseCase(ticketRepository);
-        getTicketByIdUseCase = new GetTicketByIdUseCase(ticketRepository);
-        getTicketByCodeUseCase = new GetTicketByCodeUseCase(ticketRepository);
+        var responseCache = new TicketResponseCache(
+                new org.springframework.cache.concurrent.ConcurrentMapCacheManager("ticket_detail"));
+        getTicketsPageUseCase = new GetTicketsPageUseCase(ticketRepository, mock(TicketAccessPolicy.class));
+        getTicketByIdUseCase = new GetTicketByIdUseCase(ticketRepository, mock(TicketAccessPolicy.class), responseCache);
+        getTicketByCodeUseCase = new GetTicketByCodeUseCase(ticketRepository, mock(TicketAccessPolicy.class), responseCache);
     }
 
     private Ticket createMockTicket(Long id, String ticketCode) {

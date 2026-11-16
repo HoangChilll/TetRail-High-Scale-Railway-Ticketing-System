@@ -1,6 +1,6 @@
 package com.hoang.ddd.controller.booking;
 
-import com.hoang.ddd.application.booking.dto.response.TicketResponse;
+import com.hoang.ddd.application.booking.dto.response.SeatAvailabilityResponse;
 import com.hoang.ddd.application.booking.usecase.GetTripTicketsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,8 @@ public class TripTicketController {
      * Lấy sơ đồ ghế và trạng thái vé của chuyến tàu (AVAILABLE, RESERVED, ISSUED)
      */
     @GetMapping("/{tripId}/tickets")
-    public ResponseEntity<List<TicketResponse>> getTripTickets(@PathVariable("tripId") Long tripId) {
-        List<TicketResponse> tickets = getTripTicketsUseCase.execute(tripId);
+    public ResponseEntity<List<SeatAvailabilityResponse>> getTripTickets(@PathVariable("tripId") Long tripId) {
+        List<SeatAvailabilityResponse> tickets = getTripTicketsUseCase.execute(tripId);
         return ResponseEntity.ok(tickets);
     }
 }
