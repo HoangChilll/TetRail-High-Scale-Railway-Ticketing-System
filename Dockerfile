@@ -3,13 +3,9 @@ WORKDIR /workspace
 
 # Copy only build inputs; local secrets and target directories stay outside the image.
 COPY pom.xml ./
-COPY hoang-domain ./hoang-domain
-COPY hoang-infrastructure ./hoang-infrastructure
-COPY hoang-application ./hoang-application
-COPY hoang-controller ./hoang-controller
-COPY start ./start
-RUN mvn -B -ntp -pl start -am -DskipTests package \
-    && cp start/target/hoang-start-*.jar /workspace/app.jar
+COPY src ./src
+RUN mvn -B -ntp -DskipTests package \
+    && cp target/tetrail.jar /workspace/app.jar
 
 FROM eclipse-temurin:21-jre-jammy AS runtime
 RUN apt-get update \
