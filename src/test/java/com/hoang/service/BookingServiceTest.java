@@ -40,13 +40,13 @@ class BookingServiceTest {
     @Mock private UserRepository users;
 
     private BookingService bookingService;
-
+    //trước khi chạy test
     @BeforeEach
     void setUp() {
         Clock clock = Clock.fixed(NOW, ZoneOffset.UTC);
         bookingService = new BookingService(bookings, tickets, users, clock);
     }
-
+    // giả lập dữ liệu
     private CreateBookingRequest command() {
         return CreateBookingRequest.builder()
                 .ticketIds(List.of(11L, 12L))
@@ -61,7 +61,7 @@ class BookingServiceTest {
                 Ticket.builder().id(11L).fare(new BigDecimal("100000")).build(),
                 Ticket.builder().id(12L).fare(new BigDecimal("150000")).build());
     }
-
+    // giả lập việc đã lưu vô database
     private void assignBookingIdWhenSaved() {
         when(bookings.save(any(Booking.class))).thenAnswer(invocation -> {
             Booking booking = invocation.getArgument(0);
@@ -71,6 +71,7 @@ class BookingServiceTest {
     }
 
     @Test
+    @Display("Trường hợp tạo booking thành công")
     void createsPendingBookingWithCorrectAmountAndExpiry() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
@@ -91,6 +92,7 @@ class BookingServiceTest {
     }
 
     @Test
+    @Display("Trường hợp khi mà người dùng mua 2 vé mà chỉ có 1 vé được phép mua")
     void doesNotSaveBookingWhenSomeTicketsAreMissing() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds()))
@@ -104,6 +106,7 @@ class BookingServiceTest {
     }
 
     @Test
+    @Display("Trường hợp khi mà người dùng mua 2 vé mà database chỉ thay đổi trạng thái của 1 ticket")
     void rejectsBookingWhenOnlyOneTicketCanBeReserved() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
@@ -116,6 +119,7 @@ class BookingServiceTest {
     }
 
     @Test
+    @Display("Trường hợp khi đúng của người mua cũng là người đặt vé")
     void attachesLoggedInUserToBooking() {
         CreateBookingRequest command = command();
         User user = User.builder().id(7L).build();
