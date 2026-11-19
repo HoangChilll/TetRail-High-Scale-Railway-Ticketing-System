@@ -9,6 +9,7 @@ import com.hoang.repository.BookingRepository;
 import com.hoang.repository.TicketRepository;
 import com.hoang.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -71,7 +72,7 @@ class BookingServiceTest {
     }
 
     @Test
-    @Display("Trường hợp tạo booking thành công")
+    @DisplayName("Trường hợp tạo booking thành công")
     void createsPendingBookingWithCorrectAmountAndExpiry() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
@@ -92,7 +93,7 @@ class BookingServiceTest {
     }
 
     @Test
-    @Display("Trường hợp khi mà người dùng mua 2 vé mà chỉ có 1 vé được phép mua")
+    @DisplayName("Trường hợp khi mà người dùng mua 2 vé mà chỉ có 1 vé được phép mua")
     void doesNotSaveBookingWhenSomeTicketsAreMissing() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds()))
@@ -106,7 +107,7 @@ class BookingServiceTest {
     }
 
     @Test
-    @Display("Trường hợp khi mà người dùng mua 2 vé mà database chỉ thay đổi trạng thái của 1 ticket")
+    @DisplayName("Trường hợp khi mà người dùng mua 2 vé mà database chỉ thay đổi trạng thái của 1 ticket")
     void rejectsBookingWhenOnlyOneTicketCanBeReserved() {
         CreateBookingRequest command = command();
         when(tickets.findByIdIn(command.getTicketIds())).thenReturn(availableTickets());
@@ -119,7 +120,7 @@ class BookingServiceTest {
     }
 
     @Test
-    @Display("Trường hợp khi đúng của người mua cũng là người đặt vé")
+    @DisplayName("Trường hợp khi đúng của người mua cũng là người đặt vé")
     void attachesLoggedInUserToBooking() {
         CreateBookingRequest command = command();
         User user = User.builder().id(7L).build();

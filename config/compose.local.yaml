@@ -1,0 +1,11 @@
+# Publish dependencies for StartApplication running on the host.
+# Start only postgres and redis with this override; compose.yaml runs the full stack.
+name: tetrail-local
+
+services:
+  postgres:
+    ports:
+      - "127.0.0.1:${LOCAL_POSTGRES_PORT:-15432}:5432"
+  redis:
+    ports:
+      - "127.0.0.1:${LOCAL_REDIS_PORT:-16379}:6379"

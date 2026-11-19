@@ -1,0 +1,17 @@
+# Use with --spring.profiles.active=local from the project root.
+spring:
+  config:
+    import: "optional:file:.env[.properties]"
+  datasource:
+    url: jdbc:postgresql://localhost:${LOCAL_POSTGRES_PORT:15432}/${POSTGRES_DB:tetrail}
+    username: ${POSTGRES_USER:tetrail}
+    password: ${POSTGRES_PASSWORD}
+  data:
+    redis:
+      host: localhost
+      port: ${LOCAL_REDIS_PORT:16379}
+
+management:
+  health:
+    mail:
+      enabled: false
